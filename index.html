@@ -331,6 +331,6 @@ document.addEventListener("change",e=>{
 });
 const oldDays=byId("days");
 oldDays.addEventListener("click",e=>{const btn=e.target.closest("button[data-day]");if(btn){state.day=Number(btn.dataset.day);render();}});
-document.querySelector(".toolbar").querySelector("#hide").removeAttribute("onchange");
+{const previousHide=byId("hide");const cleanHide=previousHide.cloneNode(true);previousHide.replaceWith(cleanHide);}
 render();
 })();</script></body></html>
