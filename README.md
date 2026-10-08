@@ -1,18 +1,39 @@
-# TOEIC Speaking IH 150 · 4-day intensive practice
+# TOEIC Speaking IH 150 · 4-day intensive study
 
-Interactive study page: **index.html**.
+A mobile-friendly study workbook for **2026-10-08 to 2026-10-11**, with seven complete practice sets.
 
-- **77 practice questions** across seven 11-question sets, for Oct 8–11
-- **14 picture-description practice photos** loaded from Pexels with attribution
-- Example responses, Korean explanations, key templates, listening via your browser's English speech synthesis, answer hiding, and progress tracking
-- Study schedule: Oct 8 (22 questions), Oct 9 (11), Oct 10 (22), Oct 11 (22)
+## What's included
 
-## Open on Safari
+- **77 practice questions:** 7 sets × 11 questions, all five TOEIC Speaking Parts
+- **14 picture-description photos:** photographed scenes with sample English answers, Korean explanation, and position phrases
+- **Part + question numbers:** e.g. `Part 4 · Q09`
+- **True table layouts for Q8–Q10**, with a separate reference sheet in each of the seven practice sets:
+  1. Healthy Living Fair (time and pricing exceptions)
+  2. Candidate résumé and interview schedule (supplemental practice)
+  3. Busan business-trip itinerary (time changes)
+  4. Photography workshop (session vs check-in times)
+  5. Digital Skills Day (canceled session)
+  6. Customer-service training (AM/PM sessions)
+  7. Airport shuttle timetable (departure, arrival, fare and cancellations)
+- **Dedicated tabs:** 77-question workbook / IH score tips / reusable sentence templates
+- **Audio:** English questions and model answers via the browser's speech synthesis, with speed control
+- **Practice timer, answer hiding, individual study checkboxes**
 
-Once GitHub Pages is enabled in **Settings → Pages → Deploy from a branch → main → /(root) → Save**, the study page should be available at https://j-film.github.io/Eng/ (allow a few minutes for deployment).
+## Four-day plan
 
-## Notes
+| Day | Sets | Questions |
+|---|---|---:|
+| Oct 8 | 1–2 | 22 |
+| Oct 9 | 3 | 11 |
+| Oct 10 | 4–5 | 22 |
+| Oct 11 | 6–7 | 22 |
 
-The images load from the Pexels service, so a network connection is needed for those images. The English playback uses your device/browser TTS voices. Audio availability varies by browser.
+## Open and publish
 
-These are practice problems, not official ETS past questions.
+The complete website is the single file **`index.html`** at the repository root. On a static host such as Netlify, import this GitHub repository and leave the build command empty. Set publish directory to `.`.
+
+GitHub Pages is also available: **Settings → Pages → Deploy from a branch → main → /(root)**.
+
+Images load from Pexels and require internet access. Browser voice availability varies across devices.
+
+**Note:** These are original teaching questions rather than official ETS test questions. The candidate résumé exercise is supplemental: official samples focus primarily on event schedules for questions 8–10.
