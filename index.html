@@ -44,4 +44,293 @@ function stopVoice(){if('speechSynthesis'in window)window.speechSynthesis.cancel
 function speak(text){if(!('speechSynthesis'in window)){$('notice').textContent='이 브라우저는 음성 재생을 지원하지 않습니다. iPhone에서는 Safari로 열어보세요.';return;}stopVoice();utterance=new SpeechSynthesisUtterance(text);utterance.lang='en-US';utterance.rate=Number($('speed').value);utterance.pitch=1;const voices=window.speechSynthesis.getVoices();utterance.voice=voices.find(v=>v.lang==='en-US'&&/Samantha|Ava|Allison|Google US English/i.test(v.name))||voices.find(v=>v.lang==='en-US')||voices.find(v=>v.lang.startsWith('en'))||null;utterance.onstart=()=>$('notice').textContent='▶ 영어 음성 재생 중';utterance.onend=()=>$('notice').textContent='재생 완료';utterance.onerror=(e)=>$('notice').textContent='재생이 중단되었습니다. 재생 버튼을 다시 눌러보세요.';window.speechSynthesis.speak(utterance);}
 function show(){stopVoice();$('days').innerHTML=[1,2,3,4,5,6,7].map((d)=>`<button class="${day===d?'active':''}" onclick="day=${d};show()">${BLOCKS[d-1][0]}<br><small>${BLOCKS[d-1][1]}</small></button>`).join('');$('questions').innerHTML=DATA.filter(x=>x.day===day).map(x=>`<article class="card"><div class="head"><span class="num">QUESTION ${x.num}</span><span class="tag">${esc(x.kind)}</span></div><div class="q">${esc(x.q)}</div>${x.image?`<div class="picture-wrap"><img loading="lazy" src="${esc(x.image)}" alt="${esc(x.scene)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="photo-fallback">사진 연결에 실패했습니다. 아래 원본 링크를 눌러 사진을 확인하세요.</div><div class="credit">📷 ${esc(x.credit)} · <a target="_blank" rel="noopener noreferrer" href="${esc(x.source)}">사진 원본 보기 ↗</a></div></div>`:''}${x.tip?`<div class="tip">${esc(x.tip)}</div>`:''}<div class="answer ${$('hide').checked?'hidden':''}" id="ans${x.num}"><b>💬 모범답안</b>\n${esc(x.a)}${x.ko?`<div class="kr-answer"><b>🇰🇷 한글 해석</b>\n${esc(x.ko)}</div>`:''}</div><div class="btns"><button class="btn primary" onclick="playAnswer(${day},${x.num})">▶ 답안 듣기</button><button class="btn" onclick="playQuestion(${day},${x.num})">🔊 질문 듣기</button><button class="btn" onclick="toggleAnswer(${x.num})">답안 보기/숨기기</button><label class="done"><input type="checkbox" class="check" data-key="${day}-${x.num}"> 연습 완료</label></div></article>`).join('');document.querySelectorAll('.check').forEach(c=>{try{c.checked=localStorage.getItem('toeic-'+c.dataset.key)==='1'}catch(e){} c.addEventListener('change',()=>{try{localStorage.setItem('toeic-'+c.dataset.key,c.checked?'1':'0')}catch(e){}})});}
 function playAnswer(d,n){speak(DATA.find(x=>x.day===d&&x.num===n).a)}function playQuestion(d,n){speak(DATA.find(x=>x.day===d&&x.num===n).q)}function toggleAnswer(n){$('ans'+n).classList.toggle('hidden')} $('hide').addEventListener('change',show);show();
-</script></body></html>
+</script><style>
+/* IH150 V2: tab navigation, readable documents, mobile-first teaching */
+:root{--navy:#142641;--blue:#255ddb;--ink:#17243b;--soft:#f4f7fd;--line:#dbe4f1}
+body{background:#f5f7fc;color:var(--ink)}
+main{max-width:1050px}
+.intro{background:linear-gradient(115deg,#112541,#2754a7);box-shadow:0 8px 30px #1d3b7021}
+.intro h1{font-size:clamp(23px,4vw,34px)}
+.tabs-primary{display:flex;gap:8px;overflow-x:auto;padding:15px 0 3px;position:sticky;top:0;z-index:10;background:#f5f7fc;border-bottom:1px solid #e5eaf2}
+.tabs-primary button{white-space:nowrap;padding:12px 18px;border:1px solid #cedaeb;border-radius:12px;background:#fff;color:#27466e;font-weight:800;font-size:14px;cursor:pointer}
+.tabs-primary button.active{background:#1c4caa;color:#fff;border-color:#1c4caa}
+.days{position:static;gap:7px;padding:13px 0}
+.days button{min-width:116px}
+.days button.active{background:#1c4caa}
+.days button small{font-weight:500}
+.toolbar{padding:10px 13px;background:#fff;border-radius:12px;border:1px solid #e1e7f2}
+.card{border:1px solid var(--line);box-shadow:0 4px 18px #152c4a08}
+.card .head{flex-wrap:wrap}
+.card .num{font-size:13px;color:#124dba}
+.card .tag{font-size:12px;background:#eaf2ff;border-radius:8px;padding:6px 10px}
+.question-marker{font-size:13px;font-weight:900;letter-spacing:.04em;color:#15489b}
+.q{font-size:18px}
+.worksheet{margin:14px 0 20px;border:1px solid #c9d8ea;border-radius:16px;overflow:hidden;background:#fff}
+.sheethead{background:linear-gradient(100deg,#15335c,#274c82);color:white;padding:18px}
+.sheethead .sheettype{font-size:11px;text-transform:uppercase;font-weight:800;opacity:.85;letter-spacing:.06em}
+.sheethead h3{margin:7px 0;font-size:18px;line-height:1.4;letter-spacing:.01em}
+.sheethead p{margin:0;font-size:13px;color:#e1ecff}
+.sheet-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:13px;background:#eff5fc}
+.sheet-fact{border:1px solid #d8e3f1;border-radius:9px;padding:10px;background:white;overflow-wrap:anywhere}
+.sheet-fact b{display:block;font-size:11px;text-transform:uppercase;color:#647894;margin-bottom:4px}
+.sheet-fact span{font-size:13px}
+.sheet-scroll{overflow-x:auto}
+.sheet-table{border-collapse:collapse;width:100%;min-width:540px;font-size:14px}
+.sheet-table th{background:#e9f0fa;color:#1c426e;text-align:left;padding:11px 12px;border-bottom:2px solid #cddced;white-space:nowrap}
+.sheet-table td{padding:11px 12px;border-bottom:1px solid #e0e7f1;vertical-align:top;line-height:1.55}
+.sheet-table tbody tr:nth-child(even){background:#f8fafd}
+.sheet-table td:first-child{font-weight:750;color:#174580}
+.sheet-table tr:last-child td{border-bottom:0}
+.sheet-notes{padding:13px 16px;background:#fff8e7;border-top:1px solid #eedfa9;color:#755616;font-size:13px;line-height:1.7}
+.sheet-note{display:block}
+.typehint{display:inline-block;background:#e8efff;color:#234d9e;font-weight:800;font-size:11px;border-radius:7px;padding:5px 8px;margin-top:9px}
+.answer{padding:15px;border-radius:12px;border:1px solid #e4eaf5;background:#f8faff;white-space:pre-line;line-height:1.85}
+.answer>b{display:block;margin-bottom:8px;color:#15468b}
+.kr-answer{margin:12px 0 0}
+.piclabel{font-size:12px;font-weight:800;color:#375b91;margin-top:7px}
+.btns{margin-top:13px;align-items:center}
+.btn{font-size:13px}
+.card .tip{margin-top:12px}
+.timerbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.timerdisplay{font-variant-numeric:tabular-nums;min-width:62px;font-weight:900;font-size:14px;color:#164a93}
+.progressbar{height:9px;background:#dde7f6;border-radius:20px;overflow:hidden;margin:10px 0}
+.progressbar > div{height:100%;width:0%;background:#2b67d9;border-radius:20px}
+.guide-v2{background:#fff;border:1px solid #dae4f1;border-radius:18px;padding:clamp(15px,3vw,28px);margin-top:16px}
+.guide-v2 h2{margin:5px 0 11px}
+.guide-v2 h3{margin:22px 0 10px;color:#163865}
+.guide-v2 p,.guide-v2 li{line-height:1.75}
+.guide-v2 ul{padding-left:20px}
+.guide-v2 table{border-collapse:collapse;width:100%;font-size:13px}
+.guide-v2 th,.guide-v2 td{border-bottom:1px solid #dbe4f1;padding:11px 8px;vertical-align:top;text-align:left}
+.guide-v2 th{background:#eff4fb;color:#244b79}
+.tipgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tipcard{padding:15px;border-radius:13px;border:1px solid #dbe6f5;background:#f9fbff}
+.tipcard h4{margin:0 0 8px;color:#1b4987}
+.template-card{border:1px solid #dce6f3;border-radius:15px;padding:15px;margin:13px 0;background:#f9fbfe}
+.template-card h4{margin:0 0 10px}
+.template-english{white-space:pre-line;background:#eff5ff;border-left:4px solid #2c66d7;padding:12px;border-radius:8px;line-height:1.9}
+.template-kr{color:#63758e;font-size:13px;padding-top:8px;line-height:1.65}
+.template-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.study-tag{padding:5px 9px;background:#edf4ff;color:#285495;border-radius:7px;font-size:12px}
+.note-yellow{background:#fff8e8;border:1px solid #efdcaa;padding:12px 15px;border-radius:10px;color:#72541d;line-height:1.65}
+.mini-stats{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.mini-stats span{background:#fff2;border:1px solid #fff4;border-radius:10px;padding:7px 12px;font-weight:700;font-size:12px}
+.compact-list{padding-left:21px}
+.sec-heading{font-size:18px;border-bottom:2px solid #e6eef7;padding-bottom:9px;margin:26px 0 10px}
+.muted-small{color:#68809e;font-size:12px}
+.hide-me{display:none!important}
+@media(max-width:650px){main{padding:12px 11px 60px}.intro{padding:19px}.sheet-facts,.tipgrid{grid-template-columns:1fr}.card{padding:14px}.sheet-table{min-width:455px;font-size:12.5px}.sheet-table td,.sheet-table th{padding:9px 8px}.tabs-primary button{font-size:13px;padding:11px 13px}.guide-v2{padding:15px}.q{font-size:17px}}
+</style><script>(function enhancement(){
+const docs={
+1:{kind:"행사 안내 / 참가비 예외",title:"HEALTHY LIVING FAIR",sub:"October 15 · Community Hall · General Admission: FREE",columns:["Time","Activity","Speaker / Place"],rows:[["9:00 AM","Registration","Main lobby"],["10:00 AM","Healthy Eating Talk","Dr. Lee · Room A"],["11:00 AM","Yoga Demonstration","Anna Park · Main Hall"],["12:00 PM","Lunch Break","Café (meal not included)"],["1:30 PM","Cooking Workshop","Chef Kim · Room B"],["3:00 PM","Closing Remarks","Main Hall"]],notes:["General admission is FREE.","Optional cooking workshop: $10 materials fee.","Lunch is not included."]},
+2:{kind:"이력서 + 면접 시간표 · 확장 연습",title:"CANDIDATE PROFILE · MINA CHOI",sub:"Digital Marketing Specialist · October 19 Interview Day",facts:[["Education","B.A. in Marketing · Eastwood University (2020)"],["Current Role","Digital Marketing Specialist · BrightLab (2024–present)"],["Previous Role","Marketing Coordinator · Northstar Media (2021–2024)"],["Skills","SEO, campaign analytics, presentations"]],columns:["Time","Interview Activity","Interviewer"],rows:[["9:30 AM","Portfolio Review","HR Manager Kim"],["10:30 AM","Marketing Strategy Discussion","Daniel Moon"],["12:00 PM","Lunch","—"],["1:30 PM","Final Interview","Director Lee"]],notes:["Résumé / candidate details are supplemental practice. ETS official samples mainly use event schedules."]},
+3:{kind:"출장 계획 / 시간표 정정",title:"BUSINESS TRIP TO BUSAN",sub:"October 21 · One-day business visit",columns:["Time","Activity","Location"],rows:[["8:00 AM","Train departs","Seoul Station"],["10:40 AM","Train arrives","Busan Station"],["11:30 AM","Client Meeting","Port Center, Room 201"],["12:30 PM","Lunch","Port Center Café"],["2:00 PM","Factory Tour","West Plant"],["4:00 PM","Team Debrief","Port Center, 2nd Floor"]],notes:["Factory tour was moved from 11:30 AM to 2:00 PM."]},
+4:{kind:"강좌 프로그램 / 강사 확인",title:"SATURDAY PHOTOGRAPHY WORKSHOP",sub:"October 24 · Art Studio · Registration closes October 20",columns:["Time","Session","Instructor"],rows:[["9:30 AM","Check-in","Front Desk"],["10:00 AM","Camera Basics","Emma Cho"],["11:30 AM","Outdoor Practice","Emma Cho"],["12:30 PM","Lunch Break","—"],["1:30 PM","Photo Editing","Michael Han"],["3:00 PM","Portfolio Review","Emma Cho & Michael Han"]],notes:["Check-in is at 9:30 AM; first CLASS is at 10:00 AM."]},
+5:{kind:"세미나 시간표 / 취소",title:"DIGITAL SKILLS DAY",sub:"November 8 · City Library, Seminar Room B · FREE",columns:["Time","Topic","Presenter / Status"],rows:[["9:30 AM","Registration","Library Staff"],["10:00 AM","Online Study Tools","Grace Park"],["11:00 AM","Internet Safety","Tom Lee"],["12:00 PM","Lunch Break","—"],["1:30 PM","Online Collaboration","Sarah Choi"],["3:00 PM","AI Productivity","CANCELED"]],notes:["The 3:00 PM session has been canceled.","All remaining sessions are free."]},
+6:{kind:"사내 교육 / 오전·오후 구분",title:"CUSTOMER SERVICE TRAINING",sub:"November 12 · Central Office, Room B · Employees only",columns:["Time","Training","Leader"],rows:[["9:00 AM","Welcome & Check-in","Staff"],["9:30 AM","Service Fundamentals","Fiona Park"],["11:00 AM","Handling Complaints","Paul Kim"],["12:00 PM","Lunch","—"],["1:00 PM","Practical Exercises","Linda Cho"],["3:00 PM","Feedback & Discussion","Paul Kim"]],notes:["Handling Complaints is BEFORE lunch.","Employees only."]},
+7:{kind:"교통편 비교 / 취소·요금",title:"AIRPORT SHUTTLE SERVICE",sub:"October 30 · City Center → Airport",columns:["Bus","Departure","Arrival","Fare / Note"],rows:[["A1","8:00 AM","8:50 AM","$12 · Express"],["B2","8:30 AM","9:35 AM","$9 · Local"],["A3","9:00 AM","9:50 AM","$12 · Express"],["B4","9:30 AM","10:35 AM","$9 · Local"],["A5","10:00 AM","10:50 AM","CANCELED"]],notes:["Bus A5 at 10:00 AM has been canceled.","Children under six travel free with an adult."]}
+};
+const part4={
+1:[
+["Where and when will the Healthy Living Fair take place?","The Healthy Living Fair will take place at Community Hall on October fifteenth.","건강생활 박람회는 10월 15일 커뮤니티 홀에서 열립니다."],
+["I heard I need to pay twenty dollars to enter. Is that correct?","No, that's not correct. General admission is free. Only the optional cooking workshop requires a ten-dollar materials fee.","아니요. 일반 입장은 무료이고, 선택형 요리 강좌에만 재료비 10달러가 필요합니다."],
+["Could you tell me about the activities before lunch?","There are two activities before lunch. At ten a.m., Dr. Lee will give a talk on healthy eating in Room A. At eleven, Anna Park will lead a yoga demonstration in the Main Hall.","점심 전에는 오전 10시 이 박사의 건강 식생활 강연과 11시 박안나의 요가 시연이 있습니다."]
+],
+2:[
+["What is Mina Choi's current job, and where does she work?","Mina Choi currently works as a digital marketing specialist at BrightLab. She has worked there since 2024.","최미나는 2024년부터 BrightLab에서 디지털 마케팅 전문가로 근무하고 있습니다."],
+["I was told that Mina Choi has a degree in computer engineering. Is that right?","No, that's not correct. She earned a bachelor's degree in marketing from Eastwood University in 2020.","아니요. 최미나는 컴퓨터공학이 아니라 2020년 Eastwood University에서 마케팅 학사 학위를 받았습니다."],
+["Please describe the two interview activities scheduled before lunch.","There are two activities before lunch. First, a portfolio review with HR Manager Kim begins at nine thirty. Then, at ten thirty, Mina will discuss marketing strategy with Daniel Moon.","점심 전에는 9시 30분 포트폴리오 검토, 10시 30분 마케팅 전략 면접이 있습니다."]
+],
+3:[
+["What time is our train scheduled to arrive in Busan?","Our train is scheduled to arrive at Busan Station at ten forty in the morning.","열차는 오전 10시 40분 부산역에 도착합니다."],
+["Is the factory tour scheduled for eleven thirty in the morning?","No, it is actually scheduled for two p.m. The client meeting is at eleven thirty at the Port Center.","아니요. 공장 견학은 오후 2시이고, 오전 11시 30분에는 고객사 미팅이 있습니다."],
+["Could you tell me about our activities after lunch?","After lunch, we have two activities. At two p.m., we will visit the West Plant for a factory tour. Then, at four p.m., we will have a team debrief on the second floor of the Port Center.","점심 이후 오후 2시 공장 견학과 4시 팀 회의가 있습니다."]
+],
+4:[
+["What time does the first photography class start?","The first class, Camera Basics, begins at ten a.m. Check-in starts earlier at nine thirty.","첫 사진 수업은 오전 10시에 시작하고 접수는 9시 30분부터입니다."],
+["Will Emma Cho teach the photo editing session?","No, Michael Han will teach photo editing at one thirty p.m. Emma Cho teaches camera basics and outdoor practice.","아니요. 사진 편집은 오후 1시 30분 Michael Han이 담당합니다."],
+["Could you tell me about all of the activities after lunch?","There are two activities after lunch. Michael Han will teach photo editing at one thirty. Then, at three o'clock, Emma Cho and Michael Han will lead the portfolio review together.","점심 이후 1시 30분 사진 편집 수업, 3시 포트폴리오 검토가 있습니다."]
+],
+5:[
+["How much does it cost to attend Digital Skills Day?","The event is free. It takes place at the City Library in Seminar Room B on November eighth.","행사는 무료이며 11월 8일 시립도서관 세미나실 B에서 진행됩니다."],
+["I heard the AI Productivity session will take place at three p.m. Is that still correct?","No, I'm sorry, but the three p.m. AI Productivity session has been canceled. The other sessions will take place as planned.","오후 3시 AI 생산성 세션은 취소됐고 나머지는 예정대로 진행됩니다."],
+["What seminars are scheduled in the morning?","There are two morning seminars. Grace Park will introduce online study tools at ten a.m. Then, Tom Lee will give a seminar on internet safety at eleven.","오전 10시 온라인 학습 도구 강좌와 11시 인터넷 안전 강좌가 있습니다."]
+],
+6:[
+["Where will Customer Service Training be held?","The training will take place at the Central Office in Room B on November twelfth.","교육은 11월 12일 중앙 사무실 B실에서 열립니다."],
+["Is the session on handling complaints in the afternoon?","No, it's scheduled for eleven a.m., before lunch. It will be led by Paul Kim.","아니요. 해당 세션은 점심 전 오전 11시에 Paul Kim이 진행합니다."],
+["Please tell me about both of the afternoon sessions.","There are two afternoon sessions. Linda Cho will lead practical exercises at one p.m. Then, Paul Kim will lead feedback and discussion at three p.m.","오후 1시 Linda Cho의 실습, 3시 Paul Kim의 피드백과 토론이 있습니다."]
+],
+7:[
+["Which bus will get me to the airport the earliest?","Bus A1 arrives at the airport the earliest. It leaves the City Center at eight a.m. and arrives at eight fifty.","가장 빨리 도착하는 버스는 A1이며 8시 출발, 8시 50분 도착입니다."],
+["I plan to take Bus A5 at ten a.m. Is that bus available?","I'm sorry, but Bus A5 at ten a.m. has been canceled. You could take Bus B4 at nine thirty instead.","오전 10시 A5 버스는 취소됐습니다. 대신 9시 30분 B4 버스를 이용할 수 있습니다."],
+["What bus options are available if I want to leave before nine thirty?","There are three buses before nine thirty. Bus A1 leaves at eight and costs twelve dollars. Bus B2 leaves at eight thirty and costs nine dollars. Bus A3 leaves at nine and costs twelve dollars.","9시 30분 전 출발은 A1(8시, 12달러), B2(8시 30분, 9달러), A3(9시, 12달러)입니다."]
+]
+};
+for (const item of DATA){
+ if(item.num>=8&&item.num<=10){
+  const v=part4[item.day][item.num-8];
+  item.q=v[0];item.a=v[1];item.ko=v[2];item.tip="표를 45초 동안 살펴보고, 답변에 필요한 행만 골라 정확하게 말하세요. 잘못된 정보는 No, actually...로 바로잡으세요.";
+ }
+}
+const revised={
+"4-5":["How do you usually book tickets when you travel?","I usually book tickets online with my phone. It is convenient, and I can compare prices easily.","여행할 때 휴대폰으로 온라인 예매합니다. 편리하고 가격 비교가 쉽습니다."],
+"7-5":["When do you usually read books or articles?","I usually read articles during my lunch break. It is an easy way to learn something new.","점심시간에 기사를 읽으며 새로운 것을 배웁니다."],
+"7-6":["Would you rather attend a small class or a large class?","I prefer a small class because I can ask more questions. The teacher can also give me personal feedback.","질문과 개인 피드백을 더 많이 받을 수 있어 소규모 수업을 선호합니다."]
+};
+for(const item of DATA){
+ const v=revised[item.day+"-"+item.num];
+ if(v){item.q=v[0];item.a=v[1];item.ko=v[2]}
+}
+const moreOpinion={
+1:"I agree that companies should encourage employees to exercise regularly. First, exercise improves physical and mental health. For example, when I take a short walk after work, I feel less stressed and sleep better. If employees are healthier, they can focus better at work. Second, exercise programs help coworkers get to know each other. My team could join a walking challenge or take a short fitness class together. This could make the workplace more friendly. For these reasons, I believe companies should support regular exercise.",
+2:"I think shopping at local stores is a good idea. First, it supports small businesses in our neighborhood. For example, I often buy bread at a nearby bakery, and the owner knows my favorite items. Second, I can check the quality before buying something. When I buy clothes, I prefer trying them on. Of course, online shopping is convenient when I am busy. However, local shopping offers personal service and helps the community. That is why I would like to shop locally more often.",
+3:"I prefer working with a team rather than working alone. First, coworkers can share ideas and solve problems more quickly. For example, when a project becomes difficult, we discuss possible solutions and find a better approach. Second, teamwork helps us learn from each other. One colleague may be good at organizing tasks, while another has strong technical skills. As a result, the team can work more efficiently. Working alone can sometimes be faster for simple tasks, but teamwork is more helpful for important projects. That is why I prefer working with others.",
+4:"I prefer planning a trip carefully because it saves time and reduces stress. First, I can compare prices and book tickets or hotels early. For example, on my last vacation, I reserved my train tickets in advance, so I did not have to worry about transportation. Second, planning helps me visit the places I really want to see. I usually make a short list of restaurants and attractions near my hotel. Of course, I also leave some free time to explore. Overall, a simple plan makes my vacations more enjoyable and less expensive.",
+5:"I think online courses are a useful way to learn new skills. First, they are convenient. I can study at home after work instead of spending time traveling. For example, I learned how to use a new computer program by watching short online lessons. Second, online courses are often more affordable, and I can review difficult parts several times. In-person classes are also good because students can ask questions immediately. However, for people with busy schedules, online learning is a practical choice. That is why I prefer online courses.",
+6:"I believe a positive work environment is more important than a high salary. First, people spend many hours at work, so good relationships with coworkers reduce stress. For example, I feel more motivated when my teammates communicate clearly and help one another. Second, a supportive manager gives employees opportunities to improve their skills. This is valuable for their long-term careers. Of course, salary is important because we have living expenses. However, if the workplace is stressful every day, a high salary may not be enough. For these reasons, I would choose a good work environment.",
+7:"I think companies should offer flexible working hours. First, employees can avoid heavy traffic and use their time more efficiently. For example, someone who lives far away could start early and finish early. Second, flexible schedules help employees manage personal responsibilities, such as family appointments. When workers have better work-life balance, they may feel less stressed and more productive. Of course, teams still need to communicate and meet deadlines. Companies could set shared hours for meetings. Overall, flexible working hours are good for both employees and employers."
+};
+for(const item of DATA){if(item.num===11)item.a=moreOpinion[item.day];}
+const partNames={1:"Read a Text Aloud · 읽기",2:"Describe a Picture · 사진 묘사",3:"Respond to Questions · 질문 응답",4:"Information Provided · 자료 활용",5:"Express an Opinion · 의견 제시"};
+const partFor=n=>n<=2?1:n<=4?2:n<=7?3:n<=10?4:5;
+const times=n=>n<=2?45:n<=4?30:n<=6?15:n===7?30:n<=9?15:n===10?30:60;
+const prep=n=>n<=4?45:n<=10?(n>=8?"자료 45초 + 문항별 3초":"문항별 3초"):45;
+const byId=id=>document.getElementById(id);
+const escapeHtml=str=>String(str??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const state={view:"study",day:1,interval:null,seconds:0};
+const intro=document.querySelector(".intro");
+intro.querySelector("h1").textContent="TOEIC Speaking · IH 150점 실전 교재";
+intro.querySelector("p.muted").textContent="77문항 · 사진 14장 · Part 번호 표시 · 7가지 자료 유형 · 핵심 팁/만능 템플릿 별도 탭";
+intro.querySelector(".jump")?.remove();
+intro.insertAdjacentHTML("beforeend",'<div class="mini-stats"><span>10/8 · 22문항</span><span>10/9 · 11문항</span><span>10/10 · 22문항</span><span>10/11 · 22문항</span></div>');
+document.querySelector(".guide")?.classList.add("hide-me");
+const nav=document.createElement("nav");
+nav.className="tabs-primary";nav.setAttribute("aria-label","교재 메인 탭");nav.id="tabsMain";
+nav.innerHTML='<button data-view="study">📚 77문항 학습</button><button data-view="tips">💡 핵심 팁</button><button data-view="templates">🧩 만능 템플릿</button>';
+byId("days").before(nav);
+const panel=document.createElement("section");panel.id="extraPanel";byId("questions").after(panel);
+function sheet(d){
+ const info=docs[d];
+ return '<section class="worksheet" aria-label="자료표"><div class="sheethead"><div class="sheettype">Part 4 · Reference Material</div><h3>'+escapeHtml(info.title)+'</h3><p>'+escapeHtml(info.sub)+'</p><span class="typehint">'+escapeHtml(info.kind)+'</span></div>'+
+ (info.facts?'<div class="sheet-facts">'+info.facts.map(f=>'<div class="sheet-fact"><b>'+escapeHtml(f[0])+'</b><span>'+escapeHtml(f[1])+'</span></div>').join("")+'</div>':"")+
+ '<div class="sheet-scroll"><table class="sheet-table"><thead><tr>'+info.columns.map(h=>'<th scope="col">'+escapeHtml(h)+'</th>').join("")+'</tr></thead><tbody>'+info.rows.map(row=>'<tr>'+row.map(c=>'<td>'+escapeHtml(c)+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+
+ '<div class="sheet-notes">'+info.notes.map(x=>'<span class="sheet-note">※ '+escapeHtml(x)+'</span>').join("")+'</div></section>';
+}
+function dayButtons(){
+ byId("days").innerHTML=BLOCKS.map((b,i)=>'<button data-day="'+(i+1)+'" class="'+(state.day===i+1?"active":"")+'">'+b[0]+'<br><small>'+b[1]+'</small></button>').join("");
+}
+function questionCard(x){
+ let p=partFor(x.num), answer=''+escapeHtml(x.a);
+ const pic=x.image?'<div class="piclabel">📷 사진을 보고 실제로 보이는 것만 묘사하세요.</div><div class="picture-wrap"><img loading="lazy" src="'+escapeHtml(x.image)+'" alt="'+escapeHtml(x.scene)+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><div class="photo-fallback">사진을 불러오지 못했습니다. 아래 원본 사진 링크를 열어주세요.</div><div class="credit">📸 '+escapeHtml(x.credit)+' · <a href="'+escapeHtml(x.source)+'" target="_blank" rel="noopener noreferrer">원본 이미지 ↗</a></div></div>':"";
+ const marked=(x.num===1||x.num===2)?'<p class="muted-small">아래 지문을 45초 안에 자연스럽게 읽으세요.</p>':"";
+ const displayedQuestion=p===1?'<div class="q">'+escapeHtml(x.a)+'</div>':'<div class="q">'+escapeHtml(x.q)+'</div>';
+ const hidden=byId("hide").checked?" hidden":"";
+ const status=(()=>{try{return localStorage.getItem("toeic-"+x.day+"-"+x.num)==="1"}catch(e){return false}})();
+ return '<article class="card" id="question-'+x.day+'-'+x.num+'"><div class="head"><div class="question-marker">PART '+p+' · Q'+String(x.num).padStart(2,"0")+'</div><span class="tag">'+escapeHtml(partNames[p])+'</span></div>'+
+ '<div class="muted-small" style="margin-top:8px">준비 '+prep(x.num)+' · 답변 '+times(x.num)+'초</div>'+
+ (p===4?sheet(x.day):"")+marked+displayedQuestion+pic+
+ (x.tip&&p!==4?'<div class="tip">'+escapeHtml(x.tip)+'</div>':"")+
+ '<div class="answer'+hidden+'" id="ans'+x.num+'"><b>✅ '+(p===1?"읽기 연습 지문":"IH 150 목표 모범답안")+'</b>'+answer+(x.ko?'<div class="kr-answer"><b>🇰🇷 한글 해석</b><div>'+escapeHtml(x.ko)+'</div></div>':"")+'</div>'+
+ '<div class="btns"><button class="btn primary" data-audio="'+x.day+'-'+x.num+'">▶ 답안 듣기</button><button class="btn" data-question="'+x.day+'-'+x.num+'">🔊 질문 듣기</button><button class="btn" data-toggle="'+x.num+'">답안 가리기/보기</button><label class="done"><input type="checkbox" class="check" data-key="'+x.day+'-'+x.num+'" '+(status?"checked":"")+'> 학습 완료</label></div>'+
+ '<div class="timerbar"><button class="btn" data-timer="'+times(x.num)+'" data-target="'+x.day+'-'+x.num+'">⏱ '+times(x.num)+'초 타이머</button><span class="timerdisplay" id="time-'+x.day+'-'+x.num+'">준비</span></div></article>';
+}
+function progress(){
+ let done=0;
+ try{done=DATA.filter(x=>localStorage.getItem("toeic-"+x.day+"-"+x.num)==="1").length}catch(e){}
+ return '<div class="tipcard" style="margin:13px 0"><div><b>총 학습 진도: '+done+' / 77문항</b></div><div class="progressbar"><div style="width:'+Math.round(done/77*100)+'%"></div></div><div class="muted-small">체크 상태는 현재 브라우저에 저장돼요. 다른 기기와 자동 동기화되지는 않아요.</div></div>';
+}
+function guideTips(){
+ const partTips=[
+ ["Part 1 · 읽기","① 고유명사·숫자·날짜·시간을 먼저 확인. ② 쉼표에서 짧게, 문장 끝에서 확실히 쉬기. ③ 잘못 읽었어도 전체 문장 재시작하지 않기.","강세·억양을 살린 명확한 발음이 핵심. 의미 단위로 끊어 읽기."],
+ ["Part 2 · 사진 묘사","장소 → foreground(앞) → left(왼쪽) → middle/center(중앙) → right(오른쪽) → background(배경). 관찰 가능한 행동에 is/are + -ing 사용.","'This is picture taken'은 부자연스러워요. 'This picture was taken in...'으로 시작. 모든 위치를 강제로 채울 필요는 없어요."],
+ ["Part 3 · 질문 응답","5·6번은 질문 의문사에 바로 대답하고 이유 1개. 7번은 의견 + 이유 + 구체적 예시. how often에는 횟수, when에는 시점, where에는 장소.","짧아도 질문에 정확히 답하는 것이 중요. 아무 주제에나 스트레스 감소 이유를 붙이지 마세요."],
+ ["Part 4 · 자료 활용","8~10번은 자료를 45초 읽고 전화 질문에 15·15·30초 답변. 표 제목·행·예외 주석·취소·변경을 확인. Q9에서 틀린 전제를 듣는 즉시 바로잡기.","실제 시험에 가장 가까운 기준 자료는 일정표. 교재의 이력서+면접 시간표는 범위 확장 연습이에요."],
+ ["Part 5 · 의견 제시","11번 45초 준비 후 60초 답변. 주장 → 근거1 → 경험/예시 → 결과 → 근거2 → 마무리. 단순 반복보다 구체적인 예시가 중요.","만능 답안을 그대로 쓰지 말고 질문 주제와 근거가 자연스럽게 맞는지 확인."]
+ ];
+ return '<section class="guide-v2"><h2>💡 IH 150점 핵심 팁</h2><p>공식 시험 구조에 맞춘 시간 관리 + 오답 원인 체크. 모든 팁이 곧 점수 보장은 아니지만, 실전에서 실수를 줄이는 훈련용으로 정리했어.</p>'+
+ '<h3 class="sec-heading">문항별 준비·답변 시간</h3><div class="sheet-scroll"><table><thead><tr><th>Part</th><th>문항</th><th>준비</th><th>답변</th></tr></thead><tbody>'+
+ [["Part 1","1~2","각 45초","각 45초"],["Part 2","3~4","각 45초","각 30초"],["Part 3","5~6 / 7","문항당 3초","15 / 30초"],["Part 4","8~9 / 10","자료 45초 + 각 3초","15 / 30초"],["Part 5","11","45초","60초"]].map(a=>'<tr>'+a.map(v=>'<td>'+escapeHtml(v)+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+
+ '<h3 class="sec-heading">파트별 감점 방지 체크</h3><div class="tipgrid">'+partTips.map(x=>'<section class="tipcard"><h4>'+escapeHtml(x[0])+'</h4><p>'+escapeHtml(x[1])+'</p><p class="muted-small">⚠ '+escapeHtml(x[2])+'</p></section>').join("")+'</div>'+
+ '<h3 class="sec-heading">Part 4 자료 유형 도감</h3><div class="tipgrid">'+Object.values(docs).map((d,i)=>'<section class="tipcard"><b>'+escapeHtml(d.kind)+'</b><p>'+escapeHtml(d.title)+'</p><span class="study-tag">세트 '+(i+1)+'</span></section>').join("")+'</div>'+
+ '<p class="note-yellow">📌 ETS 공식 견본은 행사 일정표 중심이야. 여기 실린 이력서/지원자 정보는 면접 시간표와 함께 문제 해결력을 높이는 <b>확장 연습</b>이므로 모든 문서 형태가 똑같은 빈도로 실제 출제된다는 의미는 아니야.</p>'+
+ '<h3 class="sec-heading">4일 추천 학습법</h3><div class="tipgrid">'+[["10/8 · 22문항","세트 1, 2. 사진 위치 표현과 자료표 읽는 순서 암기. 11번 답안 2개를 소리 내어 녹음."],["10/9 · 11문항","세트 3. 8~10번 45초 자료 읽기, 15·15·30초 실전 제한. 오답 표시."],["10/10 · 22문항","세트 4, 5. 인물·강사·취소 정보 구분, 11번 답안 가리고 연습."],["10/11 · 22문항","세트 6, 7. 전 파트 시간 제한 2회, 취약 문항만 추가 복습."]].map(x=>'<div class="tipcard"><h4>'+x[0]+'</h4><p>'+x[1]+'</p></div>').join("")+'</div>'+
+ '<h3 class="sec-heading">실전 자가 점검</h3><ul><li>문제의 <b>의문사</b>에 즉시 답했는가?</li><li>Part 2에서 <b>보이지 않는 장면</b>을 추측하지 않았는가?</li><li>Part 4에서 <b>시간·사람·취소·예외</b>를 혼동하지 않았는가?</li><li>Part 5에서 <b>경험 또는 구체적 예시</b>를 하나 이상 말했는가?</li><li>답변을 끝까지 이어가되 남은 시간을 불필요한 반복으로 채우지 않았는가?</li></ul>'+
+ '<p class="muted-small">공식 참고: TOEIC Speaking 형식·시험 견본 (ETS): <a href="https://www.kr.ets.org/toeic/about/speaking-writing.html" target="_blank" rel="noopener">ETS 시험 정보 ↗</a></p></section>';
+}
+const templates=[
+{part:"Part 1 · 읽기",title:"의미 단위로 끊어 읽기",en:"Good afternoon, everyone. / The workshop will begin / at nine thirty tomorrow morning. / Please arrive ten minutes early.",ko:"슬래시(/)는 쉬어 읽을 위치를 표시한 학습용 기호야. 실제로 slash를 발음하지 않아.",tts:"Good afternoon, everyone. The workshop will begin at nine thirty tomorrow morning. Please arrive ten minutes early."},
+{part:"Part 1 · 읽기",title:"숫자·날짜·안내 방송",en:"The store will close at eight thirty this evening. / Our next event will take place on November twelfth.",ko:"thirteen/thirty, fifteen/fifty, 8:15/8:50 같은 숫자를 따로 연습해.",tts:"The store will close at eight thirty this evening. Our next event will take place on November twelfth."},
+{part:"Part 2 · 사진 묘사",title:"가장 먼저 외울 장소 + 위치 6문장",en:"This picture was taken in a [place].\nIn the foreground, I can see [person or object].\nOn the left side of the picture, [person] is [verb-ing].\nIn the middle of the picture, [person] is [verb-ing].\nOn the right side, there is [object].\nIn the background, I can see [place or object].",ko:"빈칸은 사진에 실제로 보이는 것으로 대체. 순서가 어색하면 위치는 건너뛰어도 돼.",tts:"This picture was taken in a coffee shop. In the foreground, I can see a table. On the left side of the picture, a woman is using a laptop. In the middle of the picture, a man is standing. On the right side, there is a window. In the background, I can see several people."},
+{part:"Part 2 · 사진 묘사",title:"위치·사물·동작 표현 사전",en:"In the foreground / In the background\nOn the left side / On the right side\nIn the middle / In the center\nAt the front / At the back\nNext to / Behind / Between A and B\nis standing / are walking / is holding / is looking at / is wearing",ko:"foreground는 사진 가까운 쪽, at the front는 특정 공간 앞쪽이므로 상황에 맞게 써.",tts:"In the foreground. In the background. On the left side. On the right side. In the middle. In the center. At the front. At the back. Next to. Behind. Between A and B. Is standing. Are walking. Is holding. Is looking at. Is wearing."},
+{part:"Part 3 · 질문 응답",title:"빈도·시기·장소·동반자",en:"I usually [activity] twice a week.\nI last [past activity] last weekend.\nI usually go to [place] near my home.\nI often [activity] with my friends because it's more fun.",ko:"How often? 횟수 / When? 시점 / Where? 장소 / Who with? 사람을 직접 대답.",tts:"I usually go to the gym twice a week. I last went there last weekend. I usually go to a gym near my home. I often exercise with my friends because it's more fun."},
+{part:"Part 3 · 질문 응답",title:"선호·비교·장점 (15초)",en:"I prefer [A] to [B] because [reason].\nOne advantage is that [benefit].\nFor example, [brief personal example].",ko:"15초는 무리하게 길게 늘리지 말고 바로 대답 + 이유. 30초라면 예시까지.",tts:"I prefer online shopping to shopping in stores because it is convenient. One advantage is that I can save time. For example, I often buy household items online after work."},
+{part:"Part 3 · 질문 응답",title:"중요한 기준 묻는 질문 (30초)",en:"I think [factor] is the most important.\nFirst, [reason].\nFor example, [short experience].\nAlso, [another benefit].\nThat's why I would choose [option].",ko:"What should people consider? / What is the most important factor? 에 적용.",tts:"I think location is the most important factor. First, it saves time. For example, when a gym is close to my office, I can exercise after work. Also, I can visit it more often. That's why I would choose a nearby gym."},
+{part:"Part 4 · 자료 활용",title:"기본 정보 조회: 시작·장소·비용",en:"According to the schedule, it begins at [time].\nIt will take place at [place] on [date].\nThe registration fee is [amount].\nIt is free of charge.",ko:"질문이 한 가지 사실만 묻는다면 불필요한 정보는 말하지 않아도 돼.",tts:"According to the schedule, the event begins at ten a.m. It will take place at the Community Hall on October fifteenth. The registration fee is twenty dollars. It is free of charge."},
+{part:"Part 4 · 자료 활용",title:"잘못된 정보 정정",en:"No, that's not correct. It is actually [correct information].\nI'm sorry, but [event] has been canceled.\nIt was moved from [old time] to [new time].\nThe first class starts at [time], but check-in begins at [time].",ko:"Q9에서 자주 연습할 패턴. NO라고만 하고 끝내지 말고 정확한 정보까지.",tts:"No, that's not correct. It is actually scheduled for two p.m. I'm sorry, but the session has been canceled. It was moved from eleven thirty to two p.m. The first class starts at ten, but check-in begins at nine thirty."},
+{part:"Part 4 · 자료 활용",title:"해당 일정 모두 전달 (30초)",en:"There are [number] sessions that meet your needs.\nFirst, at [time], [event] will be led by [person].\nThen, at [time], [event] is scheduled.\nFinally, at [time], [event] will take place.",ko:"조건에 맞는 행을 빠짐없이 열거하는 연습. 일정표에 2개면 2개, 3개면 3개.",tts:"There are two sessions after lunch. First, at one thirty, photo editing will be led by Michael Han. Then, at three, the portfolio review is scheduled."},
+{part:"Part 4 · 자료 활용",title:"이력서·교통편 정보 확인",en:"According to the profile, [name] has a degree in [major].\nThe candidate currently works at [company].\nBus [number] leaves at [time] and arrives at [time].\nThe cheapest available option costs [amount].",ko:"면접 일정/이력서는 확장 연습. 실제 시험의 대표 형식은 일정표이므로 그것부터 정확하게.",tts:"According to the profile, Mina Choi has a degree in marketing. The candidate currently works at BrightLab. Bus A1 leaves at eight and arrives at eight fifty. The cheapest available option costs nine dollars."},
+{part:"Part 5 · 의견 제시",title:"Agree / Disagree · 찬반",en:"I agree with this idea for two reasons.\nFirst, [reason]. For example, [personal experience].\nAs a result, [positive result].\nSecond, [reason].\nThat's why I agree with this idea.",ko:"찬성/반대 주장을 먼저 확정하고 이유가 그 주장에 맞는지 확인.",tts:"I agree with this idea for two reasons. First, it saves time. For example, I use online services after work. As a result, I have more free time. Second, it is convenient. That's why I agree with this idea."},
+{part:"Part 5 · 의견 제시",title:"A vs B · 선택/비교",en:"I prefer [A] to [B].\nThe first reason is [reason 1].\nFor instance, [experience].\nAnother advantage is [reason 2].\nAlthough [B] has benefits, [A] is better for me.",ko:"비교 주제의 만능틀. 이유가 실제 선택지 A의 장점인지 확인.",tts:"I prefer working with a team to working alone. The first reason is that we can share ideas. For instance, my teammates often help me solve problems. Another advantage is that I can learn from others. Although working alone has benefits, teamwork is better for me."},
+{part:"Part 5 · 의견 제시",title:"Most important · 가장 중요한 요소",en:"I believe [factor] is the most important quality.\nFirst, [reason].\nIn my experience, [example].\nThis helps people [result].\nFor these reasons, [factor] matters most.",ko:"좋은 상사, 직장, 여행지, 제품에서 가장 중요한 조건을 묻는 질문.",tts:"I believe communication is the most important quality of a manager. First, it prevents misunderstandings. In my experience, my team works better when our manager listens carefully. This helps people solve problems faster. For these reasons, communication matters most."},
+{part:"Part 5 · 의견 제시",title:"Experience-based · 구체적인 사례 만들기",en:"For example, last year I [past action].\nAt first, [problem].\nBut then, I [solution].\nBecause of that, [positive result].\nThis experience taught me [lesson].",ko:"11번 답변이 짧을 때 사례를 3단계(상황/행동/결과)로 늘리는 방법.",tts:"For example, last year I took an online course. At first, I did not understand the software. But then I watched the lessons again and practiced every day. Because of that, I completed my project successfully. This experience taught me that online learning can be very useful."}
+];
+function renderTemplates(){
+ let current="";
+ return '<section class="guide-v2"><h2>🧩 만능 템플릿 모음</h2><p>괄호 [ ] 부분만 바꾸면 되는 <b>문장 틀</b>과 영어 음성 예시야. 단, 어떤 문항에도 무조건 같은 이유를 넣지는 마.</p>'+
+ templates.map((t,i)=>{
+ let header=t.part!==current?'<h3 class="sec-heading">'+escapeHtml(t.part)+'</h3>':""; current=t.part;
+ return header+'<section class="template-card"><h4>'+escapeHtml(t.title)+'</h4><div class="template-english">'+escapeHtml(t.en)+'</div><div class="template-kr">🇰🇷 '+escapeHtml(t.ko)+'</div><div class="template-actions"><button class="btn primary" data-example="'+i+'">▶ 예시 발음 듣기</button><button class="btn" data-copy="'+i+'">📋 템플릿 복사</button></div></section>';
+ }).join("")+'</section>';
+}
+function resetTimer(){if(state.interval)clearInterval(state.interval);state.interval=null;document.querySelectorAll(".timerdisplay").forEach(e=>e.textContent="준비");}
+function runTimer(button){
+ resetTimer();const s=Number(button.dataset.timer);let remain=s;const target=byId("time-"+button.dataset.target);
+ if(!target)return;
+ target.textContent=remain+"초";state.interval=setInterval(()=>{remain--;target.textContent=remain>0?remain+"초":"시간 종료";if(remain<=0){clearInterval(state.interval);state.interval=null;}},1000);
+}
+function updateTabs(){
+ nav.querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.view===state.view));
+ const isStudy=state.view==="study";
+ byId("days").classList.toggle("hide-me",!isStudy);
+ document.querySelector(".toolbar").classList.toggle("hide-me",!isStudy);
+ byId("questions").classList.toggle("hide-me",!isStudy);
+}
+function render(){
+ resetTimer();
+ updateTabs();
+ if(state.view!=="study"){
+  byId("extraPanel").innerHTML=state.view==="tips"?guideTips():renderTemplates();
+  return;
+ }
+ byId("extraPanel").innerHTML="";
+ dayButtons();
+ const daysQuestion=DATA.filter(x=>x.day===state.day);
+ byId("questions").innerHTML=progress()+daysQuestion.map(questionCard).join("")+
+ '<div class="tipcard" style="margin:18px 0"><b>다음 학습</b><p>이번 세트 11문항을 마치면, 답안을 가리고 다시 한 번 말해보세요.</p><button class="btn primary" data-next>다음 세트 →</button></div>';
+}
+document.addEventListener("click",e=>{
+ const btn=e.target.closest("button");if(!btn)return;
+ if(btn.dataset.view){state.view=btn.dataset.view;render();window.scrollTo({top:0,behavior:"smooth"});return;}
+ if(btn.dataset.day){state.day=Number(btn.dataset.day);render();return;}
+ if(btn.dataset.next!==undefined){state.day=state.day===7?1:state.day+1;render();window.scrollTo({top:0,behavior:"smooth"});return;}
+ if(btn.dataset.audio){const [d,n]=btn.dataset.audio.split("-").map(Number);playAnswer(d,n);return;}
+ if(btn.dataset.question){const [d,n]=btn.dataset.question.split("-").map(Number);playQuestion(d,n);return;}
+ if(btn.dataset.toggle){const el=byId("ans"+btn.dataset.toggle);if(el)el.classList.toggle("hidden");return;}
+ if(btn.dataset.timer){runTimer(btn);return;}
+ if(btn.dataset.example){speak(templates[Number(btn.dataset.example)].tts);return;}
+ if(btn.dataset.copy){let t=templates[Number(btn.dataset.copy)].en;if(navigator.clipboard?.writeText){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✅ 복사 완료";}).catch(()=>{btn.textContent="길게 눌러 선택 복사";});}else{btn.textContent="길게 눌러 선택 복사";}return;}
+});
+document.addEventListener("change",e=>{
+ const target=e.target;
+ if(target.classList.contains("check")){
+  try{localStorage.setItem("toeic-"+target.dataset.key,target.checked?"1":"0")}catch(e){}
+  const card=byId("questions").querySelector(".tipcard");if(card){const temp=document.createElement("div");temp.innerHTML=progress();card.replaceWith(temp.firstElementChild);}
+ }
+ if(target.id==="hide"){byId("questions").querySelectorAll(".answer").forEach(el=>el.classList.toggle("hidden",target.checked));}
+});
+const oldDays=byId("days");
+oldDays.addEventListener("click",e=>{const btn=e.target.closest("button[data-day]");if(btn){state.day=Number(btn.dataset.day);render();}});
+document.querySelector(".toolbar").querySelector("#hide").removeAttribute("onchange");
+render();
+})();</script></body></html>
