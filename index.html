@@ -359,6 +359,10 @@ for(const x of DATA){
     x.used="주장 → 연결문장 → 이유 → 경험 → 추가 이유 → 결론 · 시제 일치";
   }
 }
+/* OCT8-MORNING-COACHED-ANSWERS · study-only update */
+const oct8MorningAnswers={"4":"This is a picture taken in a park. I can see a lot of trees and buildings. In the foreground, there are some people exercising. Some people are riding bicycles. Other people are walking along the path. It looks like a peaceful place.","5":"I exercise about five times a week. I usually work out after work. Exercise helps me feel energetic.","6":"I prefer exercising indoors because it is convenient. I don't have to worry about the weather. So I can exercise regularly and stick to my routine.","7":"I think location is the most important factor when choosing a gym. When the gym is close to home, it's easier to stick to my routine. If the gym is far away, I don't want to go there. For example, I used to go to a gym far from home, but I often skipped my workouts.","8":"The fair will be held at Community Hall on October 15th. Registration starts at 9 a.m.","9":"No, actually, admission is free. Only the cooking workshop costs ten dollars for materials.","10":"Sure. There are two sessions before lunch. First, at 10 a.m., there is a healthy eating talk by Dr. Lee. Then, at 11 a.m., there is a yoga demonstration by Anna Park.","11":"Yes, I agree. Companies should encourage employees to exercise regularly. I have two reasons. First, exercise helps employees feel more motivated at work. When people exercise, they can reduce stress and focus better on their work. Second, regular exercise helps people stay healthy. For example, I usually exercise after work. After exercising, I feel more energetic and less stressed. As a result, I can work better the next day. For these reasons, I think companies should encourage employees to exercise regularly."};
+for(const x of DATA){if(x.day===1&&oct8MorningAnswers[x.num]){x.a=oct8MorningAnswers[x.num];if(x.num>=8&&x.num<=10)x.ko="";}}
+const oct8Q11Easy="Yes, I agree. I have two reasons. First, exercise helps people work better. It also reduces stress. Second, exercise is good for our health. For example, I usually exercise after work, and I feel more energetic. That's why I agree.";
 const oldQuestionCard=questionCard;
 questionCard=function(x){
   let card=oldQuestionCard(x);
@@ -366,8 +370,13 @@ questionCard=function(x){
     const note='<div class="v5-pattern"><b>🧩 적용 공식 · 문법 변형</b><div>'+escapeHtml(x.used)+'</div></div>';
     card=card.replace('<div class="btns">',note+'<div class="btns">');
   }
+  if(x.day===1&&x.num===11){
+    const alt='<div class="oct8-easy-answer"><b>🎯 쉬운 실전 답안 · 말이 막힐 때</b><div>'+escapeHtml(oct8Q11Easy)+'</div><button class="btn" data-oct8-easy>🔊 쉬운 답안 듣기</button></div>';
+    card=card.replace('</div><div class="btns">',''+alt+'</div><div class="btns">');
+  }
   return card;
 };
+document.addEventListener("click",e=>{if(e.target.closest("[data-oct8-easy]"))speak(oct8Q11Easy);});
 
 render();
 })();</script><script>
